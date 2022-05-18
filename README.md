@@ -25,6 +25,10 @@ This app is intended to be the base project on top of which new features can be 
 
 ![Imgur](http://i.imgur.com/joPKoTk.gif)
 
+## Completed gif
+
+<img src='BookSearch.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
 ## Suggested Extensions
 
 1. Use SearchView to search for books with a title
