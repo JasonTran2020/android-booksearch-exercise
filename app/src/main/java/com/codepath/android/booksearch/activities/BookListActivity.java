@@ -1,13 +1,20 @@
 package com.codepath.android.booksearch.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
+
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +26,7 @@ import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import java.util.ArrayList;
 
@@ -26,10 +34,14 @@ import okhttp3.Headers;
 
 
 public class BookListActivity extends AppCompatActivity {
+    private static final String TAG = "BookListActivity";
     private RecyclerView rvBooks;
     private BookAdapter bookAdapter;
     private BookClient client;
+    private Toolbar toolbar;
     private ArrayList<Book> abooks;
+    MenuItem miActionProgressItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +51,9 @@ public class BookListActivity extends AppCompatActivity {
         // Checkpoint #3
         // Switch Activity to Use a Toolbar
         // see http://guides.codepath.org/android/Using-the-App-ToolBar#using-toolbar-as-actionbar
+        toolbar= findViewById(R.id.toolbar);
 
+        setSupportActionBar(toolbar);
         rvBooks = findViewById(R.id.rvBooks);
         abooks = new ArrayList<>();
 
@@ -62,6 +76,9 @@ public class BookListActivity extends AppCompatActivity {
                 // Get Book at the given position
                 // Pass the book into details activity using extras
                 // see http://guides.codepath.org/android/Using-Intents-to-Create-Flows
+                Intent i= new Intent(BookListActivity.this,BookDetailActivity.class);
+                i.putExtra("book", Parcels.wrap(abooks.get(position)));
+                startActivity(i);
             }
         });
 
@@ -78,6 +95,10 @@ public class BookListActivity extends AppCompatActivity {
     // Executes an API call to the OpenLibrary search endpoint, parses the results
     // Converts them into an array of book objects and adds them to the adapter
     private void fetchBooks(String query) {
+        if (miActionProgressItem!=null)
+        {
+            miActionProgressItem.setVisible(true);
+        }
         client = new BookClient();
         client.getBooks(query, new JsonHttpResponseHandler() {
 
@@ -102,6 +123,10 @@ public class BookListActivity extends AppCompatActivity {
                     // Invalid JSON format, show appropriate error.
                     e.printStackTrace();
                 }
+                if (miActionProgressItem!=null)
+                {
+                    miActionProgressItem.setVisible(false);
+                }
             }
 
             @Override
@@ -109,8 +134,13 @@ public class BookListActivity extends AppCompatActivity {
                 // Handle failed request here
                 Log.e(BookListActivity.class.getSimpleName(),
                         "Request failed with code " + statusCode + ". Response message: " + responseString);
+                if (miActionProgressItem!=null)
+                {
+                    miActionProgressItem.setVisible(false);
+                }
             }
         });
+
     }
 
     @Override
@@ -120,10 +150,27 @@ public class BookListActivity extends AppCompatActivity {
         // Checkpoint #4
         // Add SearchView to Toolbar
         // Refer to http://guides.codepath.org/android/Extended-ActionBar-Guide#adding-searchview-to-actionbar guide for more details
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                fetchBooks(query);
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
 
         // Checkpoint #7 Show Progress Bar
         // see https://guides.codepath.org/android/Handling-ProgressBars#progress-within-actionbar
+        miActionProgressItem=menu.findItem(R.id.miActionProgress);
+
         return true;
     }
 
@@ -138,6 +185,7 @@ public class BookListActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

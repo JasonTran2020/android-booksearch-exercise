@@ -1,5 +1,7 @@
 package com.codepath.android.booksearch.net;
 
+import android.util.Log;
+
 import com.codepath.asynchttpclient.AsyncHttpClient;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
@@ -14,6 +16,7 @@ public class BookClient {
         this.client = new AsyncHttpClient();
     }
 
+
     private String getApiUrl(String relativeUrl) {
         return API_BASE_URL + relativeUrl;
     }
@@ -22,6 +25,8 @@ public class BookClient {
     public void getBooks(final String query, JsonHttpResponseHandler handler) {
         try {
             String url = getApiUrl("search.json?q=");
+            Log.d("client ",url);
+            client.setTimeout(1000000);
             client.get(url + URLEncoder.encode(query, "utf-8"), handler);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

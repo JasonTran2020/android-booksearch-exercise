@@ -1,17 +1,28 @@
 package com.codepath.android.booksearch.models;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+@Parcel
 public class Book {
     private String openLibraryId;
     private String author;
     private String title;
+    private String publish_date;
+    private String publisher;
+    public String getPublish_date() {
+        return publish_date;
+    }
+    public  String getPublisher(){return publisher;}
 
     public String getOpenLibraryId() {
         return openLibraryId;
@@ -25,6 +36,8 @@ public class Book {
         return author;
     }
 
+    //Empty constructor for parcel
+    public Book(){}
     // Get book cover from covers API
     public String getCoverUrl() {
         return "https://covers.openlibrary.org/b/olid/" + openLibraryId + "-L.jpg?default=false";
@@ -44,6 +57,25 @@ public class Book {
             }
             book.title = jsonObject.has("title_suggest") ? jsonObject.getString("title_suggest") : "";
             book.author = getAuthor(jsonObject);
+
+            if (jsonObject.has("publish_date")) {
+                //List<String> temp=Arrays.asList(jsonObject.getString("publish_date").split(","));
+                //Log.i("Book",temp.toString());
+                book.publish_date=jsonObject.getJSONArray("publish_date").getString(0);
+            }
+            else
+                book.publish_date="";
+            //book.publish_date=jsonObject.has("publish_date")?jsonObject.getString("publish_date"):"";
+
+            if(jsonObject.has("publisher"))
+            {
+                Log.d("Book",jsonObject.getJSONArray("publisher").toString());
+                book.publisher=jsonObject.getJSONArray("publisher").getString(0);
+            }
+            else{
+                book.publisher="";
+            }
+
         } catch (JSONException e) {
             e.printStackTrace();
             return null;

@@ -5,6 +5,14 @@
     android:orientation="vertical"
     tools:context=".activities.BookDetailActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#8D99AE"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme" />
+
     <ImageView
         android:id="@+id/ivBookCover"
         android:layout_marginTop="8dp"
@@ -26,5 +34,17 @@
         android:layout_height="wrap_content"
         android:textSize="22sp"
         android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tvPublishDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/tvPublisher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 
 </LinearLayout>
